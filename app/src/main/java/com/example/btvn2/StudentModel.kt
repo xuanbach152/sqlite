@@ -1,7 +1,12 @@
 package com.example.btvn2
-data class StudentModel (
+import android.provider.ContactsContract.CommonDataKinds.Phone
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "students")
+data class StudentModel(
     val name: String,
-    val id: String,
+    @PrimaryKey val id: String,
     val email: String,
-    val SĐT: String
+    val phone: String
 )

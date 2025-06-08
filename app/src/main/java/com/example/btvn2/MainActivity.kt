@@ -1,5 +1,6 @@
 package com.example.btvn2
 
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -19,7 +20,9 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
     private lateinit var lvSV: ListView
     private lateinit var adapter: StudentAdapter
-    private lateinit var db: StudentDatabaseHelper
+    private lateinit var db: StudentDatabase
+    private lateinit var studentDao: StudentDao
+
     private var students = mutableListOf<StudentModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,9 +30,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         lvSV = findViewById(R.id.lvSV)
-        db = StudentDatabaseHelper(this)
+        db = StudentDatabase.getDatabase(this)
+        studentDao = db.studentDao()
 
-        students = db.getAllStudents().toMutableList()
+        students = studentDao.getAllStudents().toMutableList()
+
         adapter = StudentAdapter(this, students)
         lvSV.adapter = adapter
 
@@ -41,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 putExtra("name", student.name)
                 putExtra("id", student.id)
                 putExtra("email", student.email)
-                putExtra("phone", student.SĐT)
+                putExtra("phone", student.phone)
                 putExtra("position", position)
             }
             startActivityForResult(intent, 1)
@@ -67,12 +72,13 @@ class MainActivity : AppCompatActivity() {
             val position = data.getIntExtra("position", -1)
 
             if (isEdit && position >= 0) {
-                db.updateStudent(student)
+                studentDao.updateStudent(student)
                 students[position] = student
             } else {
-                db.insertStudent(student)
+                studentDao.insertStudent(student)
                 students.add(student)
             }
+
             adapter.notifyDataSetChanged()
         }
     }
